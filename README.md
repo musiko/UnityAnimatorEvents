@@ -1,6 +1,6 @@
 AnimatorEvents for Mechanim
 ===========================
-Version 1.1 
+Version 1.2 
 
 AnimatorEvents is a simple plugin to add callback events for Mechanim Animator.
 
@@ -16,3 +16,7 @@ First commit by joshuajebadurai
 
 Version 1.1:
 UnityEditorInternal API function update for Unity v4.3+
+
+Version 1.2:
+Update for Unity 5.x
+UnityEditor.AnimationTransition.nameHash no longer available...sign
