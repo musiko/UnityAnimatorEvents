@@ -30,11 +30,16 @@ public class AnimatorEventLayer {
 		
 		this._transitionKeys = transitionKeys;
 		this._transitionNames = transitionNames;
+
+        for (int i = 0; i < this._transitionKeys.Length; i++)
+        {
+            this._transitionKeys[i] = Animator.StringToHash(this._transitionNames[i]);
+        }
 	}
-	#endif
-	
-	Dictionary <int, string> stateNames;
-	Dictionary <int, string> transitionNames;
+#endif
+
+    public Dictionary<int, string> stateNames;
+	public Dictionary <int, string> transitionNames;
 	
 	public void MakeDictionaries () {
 		stateNames = new Dictionary<int, string>();
@@ -62,7 +67,9 @@ public class AnimatorEventLayer {
 	/// Name Hash.
 	/// </param>
 	public string GetStateName (int nameHash) {
-		return stateNames[nameHash];	
+        string stateName;
+        stateNames.TryGetValue(nameHash, out stateName);
+        return stateName;	
 	}
 	
 	/// <summary>
@@ -75,6 +82,8 @@ public class AnimatorEventLayer {
 	/// Name hash.
 	/// </param>
 	public string GetTransitionName (int nameHash) {
-		return transitionNames[nameHash];	
+        string transitionName;
+        transitionNames.TryGetValue(nameHash, out transitionName);
+        return transitionName;
 	}
 }

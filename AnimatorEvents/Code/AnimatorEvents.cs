@@ -20,7 +20,7 @@ public class AnimatorEvents : MonoBehaviour {
 	#endregion
 	
 	
-	void Start () {
+	void Awake () {
 		foreach (AnimatorEventLayer animatorLayer in layers)
 			animatorLayer.MakeDictionaries();
 	}
@@ -30,8 +30,9 @@ public class AnimatorEvents : MonoBehaviour {
 			if (layers[layer].isListening) {
 				// State Change Verification
 				layers[layer].currentState = animator.GetCurrentAnimatorStateInfo(layer);
-				
-				if (layers[layer].previousState.nameHash != layers[layer].currentState.nameHash) {
+
+                if (layers[layer].previousState.fullPathHash != layers[layer].currentState.fullPathHash)
+                {
 					if (OnStateChanged != null)
 						OnStateChanged (layer, layers[layer].previousState, layers[layer].currentState);
 					layers[layer].previousState = layers[layer].currentState;

@@ -87,8 +87,8 @@ public class AnimatorEventsEditor : Editor {
 	/// Animator.
 	/// </param>
 	private static int GetLayerCount (Animator animator) {
-		AnimatorController animatorController = animator.runtimeAnimatorController as AnimatorController;
-		return animatorController.layerCount;
+		UnityEditor.Animations.AnimatorController animatorController = animator.runtimeAnimatorController as UnityEditor.Animations.AnimatorController;
+        return animatorController.layers.Length;
 	}
 	
 	/// <summary>
@@ -101,12 +101,12 @@ public class AnimatorEventsEditor : Editor {
 	/// Animator.
 	/// </param>
 	private static string[] GetLayerNames (Animator animator) {
-		AnimatorController animatorController = animator.runtimeAnimatorController as AnimatorController;
+		UnityEditor.Animations.AnimatorController animatorController = animator.runtimeAnimatorController as UnityEditor.Animations.AnimatorController;
 		
 		List<string> layerNames = new List<string>();
 		
-		for (int i = 0; i < animatorController.layerCount; i++)
-			layerNames.Add(animatorController.GetLayer(i).name);
+		for (int i = 0; i < animatorController.layers.Length; i++)
+            layerNames.Add(animatorController.layers[i].name);
 		
 		return layerNames.ToArray();
 	}
@@ -117,30 +117,30 @@ public class AnimatorEventsEditor : Editor {
 	private static int[] GetStateKeys (Animator animator, int layer) {
 		List<int> stateKeys = new List<int>();
 		
-		AnimatorController animatorController = animator.runtimeAnimatorController as AnimatorController;
-		StateMachine stateMachine = animatorController.GetLayer(layer).stateMachine;
+		UnityEditor.Animations.AnimatorController animatorController = animator.runtimeAnimatorController as UnityEditor.Animations.AnimatorController;
+		UnityEditor.Animations.AnimatorStateMachine stateMachine = animatorController.layers[layer].stateMachine;
 
         stateKeys.AddRange(GetStateKeysFromStateMachine(stateMachine));
-        for (int i = 0; i < stateMachine.stateMachineCount; i++) {
-            StateMachine subStateMachine = stateMachine.GetStateMachine(i);
+        for (int i = 0; i < stateMachine.stateMachines.Length; i++) {
+            UnityEditor.Animations.AnimatorStateMachine subStateMachine = stateMachine.stateMachines[i].stateMachine;
             stateKeys.AddRange(GetStateKeysFromStateMachine(subStateMachine));
         }
         		
 		return stateKeys.ToArray();
 	}
 
-    private static int[] GetStateKeysFromStateMachine (StateMachine stateMachine) {
+    private static int[] GetStateKeysFromStateMachine (UnityEditor.Animations.AnimatorStateMachine stateMachine) {
         List<int> stateKeys = new List<int>();
 
-        List<State> states = new List<State>();
-        for (int i = 0; i < stateMachine.stateCount; i++)
+        List<UnityEditor.Animations.AnimatorState> states = new List<UnityEditor.Animations.AnimatorState>();
+        for (int i = 0; i < stateMachine.states.Length; i++)
         {
-            State state = stateMachine.GetState(i);
+            UnityEditor.Animations.AnimatorState state = stateMachine.states[i].state;
             states.Add(state);
         }
 
-        foreach (State state in states)
-            stateKeys.Add(state.uniqueNameHash);
+        foreach (UnityEditor.Animations.AnimatorState state in states)
+            stateKeys.Add(state.nameHash);
 
         return stateKeys.ToArray();
     }
@@ -148,31 +148,31 @@ public class AnimatorEventsEditor : Editor {
 	private static string[] GetStateNames (Animator animator, int layer) {
 		List<string> stateNames = new List<string>();
 		
-		AnimatorController animatorController = animator.runtimeAnimatorController as AnimatorController;
-		StateMachine stateMachine = animatorController.GetLayer(layer).stateMachine;
+		UnityEditor.Animations.AnimatorController animatorController = animator.runtimeAnimatorController as UnityEditor.Animations.AnimatorController;
+		UnityEditor.Animations.AnimatorStateMachine stateMachine = animatorController.layers[layer].stateMachine;
 
         stateNames.AddRange(GetStateNamesFromStateMachine(stateMachine));
-        for (int i = 0; i < stateMachine.stateMachineCount; i++)
+        for (int i = 0; i < stateMachine.stateMachines.Length; i++)
         {
-            StateMachine subStateMachine = stateMachine.GetStateMachine(i);
+            UnityEditor.Animations.AnimatorStateMachine subStateMachine = stateMachine.stateMachines[i].stateMachine;
             stateNames.AddRange(GetStateNamesFromStateMachine(subStateMachine));
         }
 
         return stateNames.ToArray();
 	}
 
-    private static string[] GetStateNamesFromStateMachine (StateMachine stateMachine) {
+    private static string[] GetStateNamesFromStateMachine (UnityEditor.Animations.AnimatorStateMachine stateMachine) {
         List<string> stateNames = new List<string>();
         
-        List<State> states = new List<State>();
-        for (int i = 0; i < stateMachine.stateCount; i++)
+        List<UnityEditor.Animations.AnimatorState> states = new List<UnityEditor.Animations.AnimatorState>();
+        for (int i = 0; i < stateMachine.states.Length; i++)
         {
-            State state = stateMachine.GetState(i);
+            UnityEditor.Animations.AnimatorState state = stateMachine.states[i].state;
             states.Add(state);
         }
 
-        foreach (State state in states)
-            stateNames.Add(state.uniqueName);
+        foreach (UnityEditor.Animations.AnimatorState state in states)
+            stateNames.Add(stateMachine.name + "." + state.name);
 
         return stateNames.ToArray();
     }
@@ -183,65 +183,65 @@ public class AnimatorEventsEditor : Editor {
 	private static int[] GetTransitionKeys (Animator animator, int layer) {
 		List<int> transitionKeys = new List<int>();
 		
-		AnimatorController animatorController = animator.runtimeAnimatorController as AnimatorController;
-		StateMachine stateMachine = animatorController.GetLayer(layer).stateMachine;
+		/*UnityEditor.Animations.AnimatorController animatorController = animator.runtimeAnimatorController as UnityEditor.Animations.AnimatorController;
+        UnityEditor.Animations.AnimatorStateMachine stateMachine = animatorController.layers[layer].stateMachine;
 
         transitionKeys.AddRange(GetTransitionKeysFromStateMachine(stateMachine));
-        for (int i = 0; i < stateMachine.stateMachineCount; i++)
+        for (int i = 0; i < stateMachine.stateMachines.Length; i++)
         {
-            StateMachine subStateMachine = stateMachine.GetStateMachine(i);
-            transitionKeys.AddRange(GetTransitionKeysFromStateMachine(subStateMachine));
-        }
+            UnityEditor.Animations.ChildAnimatorStateMachine subStateMachine = stateMachine.stateMachines[i];
+            transitionKeys.AddRange(GetTransitionKeysFromStateMachine(subStateMachine.stateMachine));
+        }*/
 				
 		return transitionKeys.ToArray();
 	}
 
-    private static int[] GetTransitionKeysFromStateMachine (StateMachine stateMachine) {
+    /*private static int[] GetTransitionKeysFromStateMachine (UnityEditor.Animations.AnimatorStateMachine stateMachine) {
         List<int> transitionKeys = new List<int>();
 
-        List<Transition> transitions = new List<Transition>();
-        for (int i = 0; i < stateMachine.stateCount; i++)
+        List<UnityEditor.Animations.AnimatorStateTransition> transitions = new List<UnityEditor.Animations.AnimatorStateTransition>();
+        for (int i = 0; i < stateMachine.states.Length; i++)
         {
-            State state = stateMachine.GetState(i);
-            Transition[] trans = stateMachine.GetTransitionsFromState(state);
+            UnityEditor.Animations.AnimatorState state = stateMachine.states[i].state;
+            UnityEditor.Animations.AnimatorStateTransition[] trans = state.transitions;
             transitions.AddRange(trans);
         }
 
-        foreach (Transition transition in transitions)
-            transitionKeys.Add(transition.uniqueNameHash);
+        foreach (UnityEditor.Animations.AnimatorStateTransition transition in transitions)
+            transitionKeys.Add(transition.GetInstanceID());
 
         return transitionKeys.ToArray();
-    }
+    }*/
 	
 	private static string[] GetTransitionNames (Animator animator, int layer) {
 		List<string> transitionNames = new List<string>();
 		
-		AnimatorController animatorController = animator.runtimeAnimatorController as AnimatorController;
-		StateMachine stateMachine = animatorController.GetLayer(layer).stateMachine;
+		UnityEditor.Animations.AnimatorController animatorController = animator.runtimeAnimatorController as UnityEditor.Animations.AnimatorController;
+        UnityEditor.Animations.AnimatorStateMachine stateMachine = animatorController.layers[layer].stateMachine;
 
         transitionNames.AddRange(GetTransitionNamesFromStateMachine(stateMachine));
-        for (int i = 0; i < stateMachine.stateMachineCount; i++)
+        for (int i = 0; i < stateMachine.stateMachines.Length; i++)
         {
-            StateMachine subStateMachine = stateMachine.GetStateMachine(i);
+            UnityEditor.Animations.AnimatorStateMachine subStateMachine = stateMachine.stateMachines[i].stateMachine;
             transitionNames.AddRange(GetTransitionNamesFromStateMachine(subStateMachine));
         }
 				
 		return transitionNames.ToArray();
 	}
 
-    private static string[] GetTransitionNamesFromStateMachine(StateMachine stateMachine) {
+    private static string[] GetTransitionNamesFromStateMachine(UnityEditor.Animations.AnimatorStateMachine stateMachine) {
         List<string> transitionNames = new List<string>();
 
-        List<Transition> transitions = new List<Transition>();
-        for (int i = 0; i < stateMachine.stateCount; i++)
+        List<UnityEditor.Animations.AnimatorStateTransition> transitions = new List<UnityEditor.Animations.AnimatorStateTransition>();
+        for (int i = 0; i < stateMachine.states.Length; i++)
         {
-            State state = stateMachine.GetState(i);
-            Transition[] trans = stateMachine.GetTransitionsFromState(state);
+            UnityEditor.Animations.AnimatorState state = stateMachine.states[i].state;
+            UnityEditor.Animations.AnimatorStateTransition[] trans = state.transitions;
             transitions.AddRange(trans);
-        }
 
-        foreach (Transition transition in transitions)
-            transitionNames.Add(transition.uniqueName);
+            foreach (UnityEditor.Animations.AnimatorStateTransition transition in trans)
+                transitionNames.Add(transition.GetDisplayName(state));
+        }
 
         return transitionNames.ToArray();
     }
@@ -259,26 +259,26 @@ public class AnimatorEventsEditor : Editor {
 	/// Layer.
 	/// </param>
 	public static int GetTransitionsCount (Animator animator, int layer) {
-		AnimatorController animatorController = animator.runtimeAnimatorController as AnimatorController;
-		StateMachine stateMachine = animatorController.GetLayer(layer).stateMachine;
+		UnityEditor.Animations.AnimatorController animatorController = animator.runtimeAnimatorController as UnityEditor.Animations.AnimatorController;
+        UnityEditor.Animations.AnimatorStateMachine stateMachine = animatorController.layers[layer].stateMachine;
 
         int transitionCount = GetTransitionsCountFromStateMachine(stateMachine);
-        for (int i = 0; i < stateMachine.stateMachineCount; i++)
+        for (int i = 0; i < stateMachine.stateMachines.Length; i++)
         {
-            StateMachine subStateMachine = stateMachine.GetStateMachine(i);
+            UnityEditor.Animations.AnimatorStateMachine subStateMachine = stateMachine.stateMachines[i].stateMachine;
             transitionCount += GetTransitionsCountFromStateMachine(subStateMachine);
         }
 		
 		return transitionCount;
 	}
 
-    public static int GetTransitionsCountFromStateMachine(StateMachine stateMachine)
+    public static int GetTransitionsCountFromStateMachine(UnityEditor.Animations.AnimatorStateMachine stateMachine)
     {
         int transitionCount = 0;
-        for (int i = 0; i < stateMachine.stateCount; i++)
+        for (int i = 0; i < stateMachine.states.Length; i++)
         {
-            State state = stateMachine.GetState(i);
-            transitionCount += stateMachine.GetTransitionsFromState(state).Length;
+            UnityEditor.Animations.AnimatorState state = stateMachine.states[i].state;
+            transitionCount += state.transitions.Length;
         }
 
         return transitionCount;
